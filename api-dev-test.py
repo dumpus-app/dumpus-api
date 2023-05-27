@@ -1,18 +1,13 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 import pandas as pd
 from distutils.command.config import config
 import re
 import time
-from celery import Celery
 
-from datetime import datetime
+from util import extract_key_from_discord_link, generate_avatar_url_from_user_id_avatar_hash, get_ts_regular_string_parser, get_ts_string_parser, count_dates_hours
+
+from datetime import datetime, timezone
 from collections import Counter
 from itertools import groupby
-
-# Download File
-import requests
 
 # Read JSON
 import orjson
@@ -22,56 +17,13 @@ import cryptocode
 from zipfile import ZipFile
 from io import TextIOWrapper
 
-# Re-zip database
-import gzip
 import sqlite3
+import gzip
 
 import base64
 
-from db import update_progress, update_step, SavedPackageData, session
-from util import (
-    # discord utilities
-    extract_key_from_discord_link,
-    generate_avatar_url_from_user_id_avatar_hash,
-    # time utilities
-    count_dates_hours,
-    get_ts_regular_string_parser,
-    get_ts_string_parser
-)
-
-app = Celery(config_source='celeryconfig')
-
-def download_file(package_id, link):
-    # check if file exists in tmp
-    path = f'tmp/{package_id}.zip'
-    try:
-        with open(path, 'rb') as f:
-            return path
-    except FileNotFoundError:
-        pass
-
-    print('downloading')
-    update_step(package_id, 'downloading')
-    with requests.get(link, stream=True, timeout=(5.0, 30.0)) as r:
-        r.raise_for_status()
-        with open(path, 'wb') as f:
-            total_length = int(r.headers.get('Content-Length'))
-            print(f'Total length: {total_length}')
-            dl = 0
-            for chunk in r.iter_content(chunk_size=8192):
-                dl += len(chunk)
-                percent = round(dl / total_length) * 100
-                if percent % 10 == 0:
-                    update_progress(package_id, percent)
-                f.write(chunk)
-            done = True
-    return path
-
-def read_analytics_file(package_id, link):
-    update_step(package_id, 'analyzing')
-    update_progress(package_id, 0)
-
-    start = time.time()
+def parse():
+    start = time.process_time()
 
     analytics_line_count = 0
 
@@ -102,6 +54,7 @@ def read_analytics_file(package_id, link):
 
     application_command_used = []
 
+    package_id = 'f3559e67245fbaa1c84f766b96c2a0e9'
     path = f'tmp/{package_id}.zip'
 
     with ZipFile(path) as zip:
@@ -441,6 +394,7 @@ def read_analytics_file(package_id, link):
 
         ch_data = next(filter(lambda x: x['id'] == channel['channel_id'], channels), None)
         if not ch_data:
+            print('CHANNEL NOT FOUND')
             continue
 
         if 'dm_user_id' in channel:
@@ -515,25 +469,18 @@ def read_analytics_file(package_id, link):
     # convert the compressed bytes to a base64-encoded string
     sql_string_compressed = base64.b64encode(sql_string_compressed_bytes).decode('utf-8')
 
-    key = extract_key_from_discord_link(link)
+    key = 'random key'
     data = cryptocode.encrypt(sql_string_compressed, key)
 
     print(f'SQLite serialization: {time.time() - start}')
 
-    # insert into db
-    session.add(SavedPackageData(package_id=package_id, data=data))
-    session.commit()
+    # write to file
+    with open('analytics.sql', 'w') as f:
+        f.write(sql_string)
 
-    update_step(package_id, 'processed')
+    with open('analytics.sql.gz', 'wb') as f:
+        f.write(sql_string_compressed)
 
     return analytics_line_count
 
-@app.task()
-def handle_package(package_id, link):
-    print(f'handling package {package_id} with link {link}')
-    download_file(package_id, link),
-    read_analytics_file(package_id, link)
-
-# todo
-# verify that file exists before reading
-# split tasks into smaller tasks
+parse()
