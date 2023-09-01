@@ -3,7 +3,7 @@ async-timeout==4.0.2
 autopep8==2.0.2
 billiard==3.6.4.0
 blinker==1.6.2
-celery==5.2.7
+celery==5.3.3
 certifi==2023.5.7
 cffi==1.15.1
 charset-normalizer==3.1.0
