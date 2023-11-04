@@ -299,7 +299,7 @@ def get_avatar(package_id, user_id):
             user_id = int(user['id'])
             default_avatar = f'https://cdn.discordapp.com/embed/avatars/{(user_id >> 22) % 6}.png'
 
-        avatar_url = 'avatar' in user and f'https://cdn.discordapp.com/avatars/{user_id}/{user["avatar"]}.{avatar_extension}' or default_avatar
+        avatar_url = 'avatar' in user and user['avatar'] is not None and f'https://cdn.discordapp.com/avatars/{user_id}/{user["avatar"]}.{avatar_extension}' or default_avatar
 
         return jsonify({
             'user_id': user_id,
