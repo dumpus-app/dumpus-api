@@ -2,87 +2,49 @@ Note: this documentation was generated automatically from the tasks.py code usin
 
 
 **activity table**
-
 |Column|Description|
-|---|---|
-|event_name|Identification of activity event. This may include 'message_sent', 'guild_joined', 'application_command_used', etc. |
-|day|The day the described event occurred, format is 'YYYY-MM-DD'. |
-|hour|The hour the event occurred, expressed in a 24-hour format.|
-|occurence_count|How many times the event has occurred.|
-|associated_channel_id|The unique ID of the channel associated with the event.|
-|associated_guild_id|The Unique ID of the guild (server) associated with the event.|
-|associated_user_id|The unique user ID associated with the event.|
-|extra_field_1|Additional details about the event. The values vary depending on the given event.|
-|extra_field_2|Additional details about the event. The values vary depending on the given event.|
+|--|--|
+|event_name|The type of event that occurred. Values include 'message_sent', 'guild_joined', 'application_command_used', 'add_reaction', etc.|
+|day|The day in 'YYYY-MM-DD' format on which the event occurred.|
+|hour|The exact hour, in military timing, during which the event occurred.|
+|occurence_count|The number of times the event happened in the specified hour.|
+|associated_channel_id|The ID of the channel associated with the event, if any.|
+|associated_guild_id|The ID of the guild associated with the event, if any.|
+|associated_user_id|The ID of the user associated with the event, if any.|
+|extra_field_1|An extra field used for storing additional information about the event. The actual information stored here depends on the event type.|
+|extra_field_2|Another extra field used for storing additional information about the event. The actual information stored here depends on the event type.|
 
 **dm_channels_data table**
-
 |Column|Description|
-|---|---|
-|channel_id|Unique ID of the channel where direct message happened.|
-|dm_user_id|Unique ID of the user involved in the direct message.|
-|user_name|Username of the user involved in the direct message.|
-|display_name|Display name of the user involved in the direct message.|
-|user_avatar_url|URL of the user's avatar.|
-|total_message_count|Total count of messages in the direct message.|
-|total_voice_channel_duration|Total duration of voice channel usage in minutes.|
-|sentiment_score|Sentiment score of messages in the direct message (ranges from -1 to 1, from negative to positive sentiment).|
+|--|--|
+|channel_id|The unique ID of the direct message (DM) channel in question.|
+|dm_user_id|The unique ID of the user with whom the direct messages are being exchanged.|
+|user_name|The username associated with dm_user_id.|
+|display_name|The display name of the user associated with dm_user_id.|
+|user_avatar_url|The URL of the avatar image of the user associated with dm_user_id.|
+|total_message_count|The total count of messages exchanged in this DM channel.|
+|total_voice_channel_duration|The total duration spent by the user in voice channels within this DM channel. It's not clear what value will be present.|
+|sentiment_score|The sentiment score associated with the messages in the DM channel. It's not clear how this value is calculated or what scale is used.|
 
-**guild_channels_data table**
-
-|Column|Description|
-|---|---|
-|channel_id|Unique ID of the guild channel.|
-|guild_id|Unique ID of the guild (server).|
-|channel_name|Name of the guild channel.|
-|total_message_count|Total count of messages in the guild channel.|
-|total_voice_channel_duration|Total duration of voice channel usage in the guild channel in minutes.|
-
-**guilds table**
-
-|Column|Description|
-|---|---|
-|guild_id|Unique ID of the guild.|
-|guild_name|Name of the guild.|
-|total_message_count|Total count of messages in the guild.|
-
-**payments table**
-
-|Column|Description|
-|---|---|
-|payment_id|Unique ID of the payment transaction.|
-|payment_date|Date of the payment done, format is 'YYYY-MM-DD'.|
-|payment_amount|Amount of payment done.|
-|payment_currency|Currency of the payment done.|
-|payment_description|Description of the payment done.|
-
-**voice_sessions table**
-
-|Column|Description|
-|---|---|
-|channel_id|Unique ID of the channel where voice session was held.|
-|guild_id|Unique ID of the guild (server), of which channel the voice session was held.|
-|duration_mins|Duration of the voice session in minutes.|
-|started_date|Start date and time of the voice session.|
-|ended_date|End date and time of the voice session.|
+Other tables follow a similar pattern where the columns represent unique identifiers for various entities (e.g., guilds, channels, users), counts of certain events (e.g., messages sent, voice channel duration), or associated metadata (e.g., user names, avatar URLs, timestamps).
 
 **sessions table**
-
 |Column|Description|
-|---|---|
-|duration_mins|Total duration of the user's active session in minutes.|
-|started_date|Start date and time of the user's session.|
-|ended_date|End date and time of the user's session.|
-|device_os|Operating system of the device from which session was active.|
+|--|--|
+|duration_mins|The total duration of the session in minutes.|
+|started_date|The start date and time of the session.|
+|ended_date|The end date and time of the session.|
+|device_os|The operating system of the device used during the session.|
 
 **package_data table**
-
 |Column|Description|
-|---|---|
-|package_id|Unique ID of the data package.|
-|package_version|Version of the data package.|
-|package_owner_id|Unique ID of the owner of the data package.|
-|package_owner_name|Username of the owner of the data package.|
-|package_owner_display_name|Display Name of the owner of the data package.|
-|package_owner_avatar_url|URL of the owner's avatar.|
-|package_is_partial|Indicates whether the package is partial (1 - Yes, 0 - No).|
+|--|--|
+|package_id|The unique identifier for the packaged data.|
+|package_version|The version number of the package.|
+|package_owner_id|The ID of the owner of the package.|
+|package_owner_name|The name of the owner of the package.|
+|package_owner_display_name|The display name of the owner of the package.|
+|package_owner_avatar_url|The URL of the owner of the package's avatar image.|
+|package_is_partial|A boolean value indicating whether the package contains partial data.|
+
+The descriptions provided are based on the given context and may not fully capture the precise meaning or usage of each column in the actual application.
