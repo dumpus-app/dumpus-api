@@ -27,7 +27,7 @@ limits==3.5.0
 markdown-it-py==3.0.0
 MarkupSafe==2.1.2
 mdurl==0.1.2
-nltk==3.8.1
+nltk==3.9
 numpy==1.24.3
 ordered-set==4.1.0
 orjson==3.8.14
