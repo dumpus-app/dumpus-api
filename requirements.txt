@@ -57,5 +57,5 @@ urllib3==2.0.2
 vine==5.0.0
 waitress==2.1.2
 wcwidth==0.2.6
-Werkzeug==2.3.4
+Werkzeug==3.0.6
 wrapt==1.15.0
