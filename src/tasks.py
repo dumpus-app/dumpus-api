@@ -235,13 +235,14 @@ def read_analytics_file(package_status_id, package_id, link, session):
                 'display_name': 'display_name' in relation_ship and relation_ship['display_name'] or None,
             })
         for payment in user_json['payments']:
-            payments.append({
-                'id': payment['id'],
-                'amount': payment['amount'],
-                'currency': payment['currency'],
-                'timestamp': get_ts_regular_string_parser(payment['created_at']).timestamp(),
-                'description': payment['description']
-            })
+            if payment['status'] == 1:
+                payments.append({
+                    'id': payment['id'],
+                    'amount': payment['amount'],
+                    'currency': payment['currency'],
+                    'timestamp': get_ts_regular_string_parser(payment['created_at']).timestamp(),
+                    'description': payment['description']
+                })
 
         print(f'User data: {time.time() - start}')
 
