@@ -1,0 +1,26 @@
+# Copy to terraform.tfvars and fill in. Do NOT commit terraform.tfvars.
+
+region      = "eu-west-3"
+environment = "prod"
+
+# Must already exist as a Route53 hosted zone in this account.
+domain_name   = "dumpus.app"
+api_subdomain = "api"
+
+# Secrets — better passed as env: TF_VAR_discord_secret=... terraform apply
+discord_secret    = "REPLACE_ME"
+diswho_jwt_secret = ""
+diswho_base_url   = ""
+
+# Set to enable the GitHub Actions deploy role.
+github_repository = "Androz2091/dumpus-api"
+
+# Bootstrap tag — overridden on every CI deploy. Keep it as `bootstrap`
+# until you've pushed at least one image, then `terraform apply` again.
+image_tag = "bootstrap"
+
+# Optional sizing overrides
+# worker_lambda_memory       = 3008
+# worker_ephemeral_storage_mb = 5120
+# worker_reserved_concurrency = 1
+# postgres_multi_az          = false

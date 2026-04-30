@@ -1,0 +1,21 @@
+# Single image used by both Lambda functions (api + worker). The active
+# handler is selected per-function via the Lambda ImageConfig.Command.
+FROM public.ecr.aws/lambda/python:3.10
+
+# NLTK data lives at a known path so we can ship it with the image and skip
+# any runtime download attempts (which would fail in the VPC anyway).
+ENV NLTK_DATA=/var/task/nltk_data
+
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN python -c "import nltk; nltk.download('vader_lexicon', download_dir='${NLTK_DATA}')"
+
+# Flat layout: src/* sits at the task root so existing top-level imports
+# (`from tasks import ...`) keep working.
+COPY src/ ${LAMBDA_TASK_ROOT}/
+
+# Default to the API handler. Override per function in Terraform/Lambda config.
+CMD [ "lambda_handlers.api.handler" ]

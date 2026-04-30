@@ -20,10 +20,7 @@ dev:
 	. .venv/bin/activate
 	bash -c " \
 		trap 'docker compose down' EXIT; \
-		docker compose up -d broker db && \
+		docker compose up -d db && \
 		cd src && \
-		tee \
-			>(docker compose logs -f) \
-			>(celery --app tasks worker --loglevel=info --queues=${CELERY_QUEUE} --hostname=${CELERY_HOSTNAME}@%h --concurrency=1) \
-			>(waitress-serve --port=${API_PORT} app:app) \
+		QUEUE_BACKEND=sync waitress-serve --port=${API_PORT} app:app \
 	"

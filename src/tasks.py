@@ -1,8 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from celery import Celery, current_task
-
 import traceback
 
 import pandas as pd
@@ -112,8 +110,6 @@ def find_analytics_file(zip_namelist):
     """
     # Look for any JSON file in a folder that could be analytics
     return next((name for name in zip_namelist if re.search(r'/analytics.*\.json$', name)), None)
-
-app = Celery(config_source='celeryconfig')
 
 def download_file(package_status_id, package_id, link, session):
     # check if file exists in tmp
@@ -905,25 +901,26 @@ def read_analytics_file(package_status_id, package_id, link, session):
 
     return analytics_line_count
 
-@app.task()
-def handle_package(package_status_id, package_id, link):
+def process_package(package_status_id, package_id, link, worker_name='regular_process'):
+    """Process a package end-to-end.
+
+    Invoked by enqueue_package(QUEUE_BACKEND=sync) for local dev and by the SQS
+    worker Lambda in production. worker_name lets premium-only work skip the
+    regular-process path; we only run regular_process today.
+    """
     print(f'handling package {package_id} with link {link}')
     session = Session()
     package_status = session.query(PackageProcessStatus).filter(PackageProcessStatus.id == package_status_id).first()
     if not package_status:
         print('package not found')
         return
-    
+
     if package_status.is_cancelled:
         print('package is cancelled, skipping')
         return
 
-    # regular_process or premium_process
-    worker_name = current_task.request.hostname
-
     if package_status.is_upgraded and worker_name.startswith('regular_process'):
         print('package is upgraded and worker is regular, skipping')
-        # the package has already been added to the premium worker queue
         return
 
     try:
@@ -956,3 +953,5 @@ def handle_package(package_status_id, package_id, link):
     finally:
         remove_file(package_id)
         session.close()
+
+
