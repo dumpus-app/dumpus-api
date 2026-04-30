@@ -39,6 +39,11 @@ resource "aws_route53_record" "api" {
   name    = local.api_fqdn
   type    = "A"
 
+  # During the OVH→Route53 migration the api record is pre-populated with the
+  # old origin IP so the domain doesn't go dark while NS propagates. This lets
+  # Terraform take over that record and swap it for the API Gateway alias.
+  allow_overwrite = true
+
   alias {
     name                   = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name
     zone_id                = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].hosted_zone_id
