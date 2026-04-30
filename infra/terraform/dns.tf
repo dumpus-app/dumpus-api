@@ -35,13 +35,9 @@ resource "aws_acm_certificate_validation" "api" {
 }
 
 resource "aws_route53_record" "api" {
-  zone_id = data.aws_route53_zone.apex.zone_id
-  name    = local.api_fqdn
-  type    = "A"
-
-  # During the OVH→Route53 migration the api record is pre-populated with the
-  # old origin IP so the domain doesn't go dark while NS propagates. This lets
-  # Terraform take over that record and swap it for the API Gateway alias.
+  zone_id         = data.aws_route53_zone.apex.zone_id
+  name            = local.api_fqdn
+  type            = "A"
   allow_overwrite = true
 
   alias {
