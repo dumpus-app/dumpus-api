@@ -46,18 +46,15 @@ from util import (
 
 from wh import send_internal_notification
 
-from nltk.sentiment import SentimentIntensityAnalyzer
-sia = SentimentIntensityAnalyzer()
-
+# TODO: restore real sentiment scoring. Stubbed to a constant so we can
+# drop NLTK + the vader_lexicon download from the Lambda image while we
+# decide whether sentiment is worth the ~50MB of data and the cold-start
+# cost. Re-enable by reinstating SentimentIntensityAnalyzer here and the
+# nltk install step in Dockerfile.lambda.
 def count_sentiments(contents):
-    sentiments = []
-    for content in contents:
-        if not content:
-            continue
-        score = sia.polarity_scores(str(content))["compound"]
-        if score != 0:
-            sentiments.append(score)
-    return sum(sentiments) / len(sentiments) if len(sentiments) > 0 else 0
+    for _ in contents:
+        pass
+    return 0.5
 
 def find_user_root(zip_namelist):
     """
