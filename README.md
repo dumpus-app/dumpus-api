@@ -63,19 +63,9 @@ A Terraform stack under `infra/terraform/` provisions a serverless deployment of
 
 1. Create a public Route53 hosted zone for your domain and point your registrar's nameservers at it.
 2. `cp infra/terraform/terraform.tfvars.example infra/terraform/terraform.tfvars` and fill in `discord_secret`, `domain_name`, `github_repository`, region, etc.
-3. `cd infra/terraform && terraform init && terraform apply`. The first apply provisions everything but the Lambdas point at a `:bootstrap` image tag that doesn't exist yet.
-4. Build and push that first image:
-   ```bash
-   aws ecr get-login-password --region "$(terraform output -raw region)" \
-     | docker login --username AWS --password-stdin "$(terraform output -raw ecr_repository_url | cut -d/ -f1)"
-   docker buildx build --platform linux/amd64 -f Dockerfile.lambda \
-     -t "$(terraform output -raw ecr_repository_url):bootstrap" --push ../..
-   for fn in "$(terraform output -raw api_lambda_name)" "$(terraform output -raw worker_lambda_name)"; do
-     aws lambda update-function-code --function-name "$fn" \
-       --image-uri "$(terraform output -raw ecr_repository_url):bootstrap"
-   done
-   ```
-5. Set the GitHub repo secret `AWS_DEPLOY_ROLE_ARN` from `terraform output -raw github_deploy_role_arn`.
+3. `cd infra/terraform && terraform init && terraform apply`.
+   This single apply does everything: a `null_resource` pushes a placeholder image (the public AWS Lambda Python base) into ECR with the `:bootstrap` tag, then the Lambda functions are created against that placeholder. Requires `docker` and `aws` CLI on the apply host.
+4. Set the GitHub repo secret `AWS_DEPLOY_ROLE_ARN` from `terraform output -raw github_deploy_role_arn`. From here on, every push to `main` builds the real image in CI and rolls both Lambdas — no more local builds needed.
 
 ### Day-to-day deploys
 

@@ -48,6 +48,7 @@ resource "aws_lambda_function" "api" {
     aws_iam_role_policy_attachment.api_basic,
     aws_iam_role_policy_attachment.api_vpc,
     aws_cloudwatch_log_group.api,
+    null_resource.lambda_bootstrap_image,
   ]
 }
 
@@ -90,6 +91,7 @@ resource "aws_lambda_function" "worker" {
     aws_iam_role_policy_attachment.worker_basic,
     aws_iam_role_policy_attachment.worker_vpc,
     aws_cloudwatch_log_group.worker,
+    null_resource.lambda_bootstrap_image,
   ]
 }
 
