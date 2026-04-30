@@ -1,7 +1,10 @@
 resource "random_password" "postgres" {
-  length           = 32
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  # Alphanumeric only: any of `:`, `?`, `&`, `=`, `@`, `/` would otherwise need
+  # URL-encoding before being spliced into the SQLAlchemy URL, and SQLAlchemy
+  # treats them as URL syntax if it sees them raw. 32 alnum chars give ~190 bits
+  # of entropy, which is plenty.
+  length  = 32
+  special = false
 }
 
 resource "aws_secretsmanager_secret" "postgres_password" {

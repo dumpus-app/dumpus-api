@@ -41,8 +41,11 @@ resource "null_resource" "lambda_bootstrap_image" {
       aws ecr get-login-password --region "$${region}" \
         | docker login --username AWS --password-stdin "$${registry}"
 
-      docker pull --platform linux/amd64 public.ecr.aws/lambda/python:3.10
-      docker tag  public.ecr.aws/lambda/python:3.10 "$${repo_url}:bootstrap"
+      # The placeholder just needs to satisfy CreateFunction's image-exists
+      # check; it is replaced on the first CI deploy. Pin a non-deprecated tag.
+      placeholder="public.ecr.aws/lambda/python:3.13"
+      docker pull --platform linux/amd64 "$${placeholder}"
+      docker tag  "$${placeholder}" "$${repo_url}:bootstrap"
       docker push "$${repo_url}:bootstrap"
     EOT
   }

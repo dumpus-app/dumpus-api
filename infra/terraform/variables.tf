@@ -132,7 +132,7 @@ variable "worker_ephemeral_storage_mb" {
 }
 
 variable "worker_reserved_concurrency" {
-  description = "Cap on concurrent worker Lambdas. 1 keeps the DB and Discord rate limits happy at our volume."
+  description = "Cap on concurrent worker Lambdas. Keep low to bound load on the DB and any third-party services the worker calls."
   type        = number
   default     = 1
 }
