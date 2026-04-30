@@ -47,28 +47,26 @@ By default, Dumpus API will only treat zip files sent from `https://discord.clic
 
 ## Deploy to AWS
 
-A Terraform stack under `infra/terraform/` provisions the production deployment of `api.dumpus.app` on AWS:
+A Terraform stack under `infra/terraform/` provisions a serverless deployment of the API on AWS:
 
 | Component        | AWS service              |
 | ---------------- | ------------------------ |
 | API              | Lambda (container image) behind API Gateway HTTP API |
-| Worker           | Lambda triggered by SQS (replaces Celery)            |
-| Database         | RDS Postgres 17 in private subnets                    |
-| Outbound NAT     | fck-nat instance on `t4g.nano` (~$3/mo)               |
-| Secrets          | Secrets Manager + Lambda env                          |
-| TLS / DNS        | ACM cert + Route53 alias to API Gateway               |
+| Worker           | Lambda triggered by SQS                              |
+| Database         | RDS Postgres in private subnets                      |
+| Outbound NAT     | fck-nat instance (NAT Gateway replacement)           |
+| Secrets          | Secrets Manager + Lambda env                         |
+| TLS / DNS        | ACM cert + Route53 alias to API Gateway              |
 | CI               | GitHub OIDC role; build → ECR → `update-function-code` |
-
-Estimated cost at 3-4 packages/day: **~$22/mo** (covered by AWS's $200 new-account credit for ~9 months).
 
 ### Bootstrap
 
-1. Create a public Route53 hosted zone for your domain. Point your registrar's nameservers at it.
-2. `cp infra/terraform/terraform.tfvars.example infra/terraform/terraform.tfvars` and fill in `discord_secret`, `github_repository`, region, etc.
-3. `cd infra/terraform && terraform init && terraform apply` — first apply creates everything but the Lambdas point at a `:bootstrap` tag that doesn't exist yet.
-4. Build & push the bootstrap image:
+1. Create a public Route53 hosted zone for your domain and point your registrar's nameservers at it.
+2. `cp infra/terraform/terraform.tfvars.example infra/terraform/terraform.tfvars` and fill in `discord_secret`, `domain_name`, `github_repository`, region, etc.
+3. `cd infra/terraform && terraform init && terraform apply`. The first apply provisions everything but the Lambdas point at a `:bootstrap` image tag that doesn't exist yet.
+4. Build and push that first image:
    ```bash
-   aws ecr get-login-password --region "$(terraform output -raw region 2>/dev/null || echo eu-west-3)" \
+   aws ecr get-login-password --region "$(terraform output -raw region)" \
      | docker login --username AWS --password-stdin "$(terraform output -raw ecr_repository_url | cut -d/ -f1)"
    docker buildx build --platform linux/amd64 -f Dockerfile.lambda \
      -t "$(terraform output -raw ecr_repository_url):bootstrap" --push ../..
@@ -81,22 +79,22 @@ Estimated cost at 3-4 packages/day: **~$22/mo** (covered by AWS's $200 new-accou
 
 ### Day-to-day deploys
 
-Push to `main` → `.github/workflows/deploy.yml` builds the container, pushes to ECR with the git SHA, and rolls both Lambdas via OIDC. No long-lived AWS keys in GitHub.
+Push to `main` → `.github/workflows/deploy.yml` builds the container, pushes to ECR tagged with the git SHA, and rolls both Lambdas via OIDC. No long-lived AWS keys in GitHub.
 
 ### Operations
 
 ```bash
-aws logs tail /aws/lambda/dumpus-prod-api --follow      # API logs
-aws logs tail /aws/lambda/dumpus-prod-worker --follow   # worker logs
-aws sqs receive-message --queue-url "$(terraform output -raw sqs_dlq_url)"  # inspect failed packages
+aws logs tail /aws/lambda/<name-prefix>-<env>-api --follow
+aws logs tail /aws/lambda/<name-prefix>-<env>-worker --follow
+aws sqs receive-message --queue-url "$(terraform output -raw sqs_dlq_url)"
 ```
 
 Things to keep in mind:
 
-- **API cold start** ~3-5s while pandas imports. Invisible on the async submit/poll flow; use provisioned concurrency if a sync endpoint needs to be sub-second.
-- **Worker `/tmp` cap** is 5GB by default (max 10GB). If users upload very large Discord exports, bump `worker_ephemeral_storage_mb`.
+- **API cold start** is a few seconds while pandas imports. Invisible on the async submit/poll flow; use provisioned concurrency if a sync endpoint must be sub-second.
+- **Worker `/tmp` cap** defaults to 5GB (max 10GB). Bump `worker_ephemeral_storage_mb` if users upload very large Discord exports.
 - **Worker timeout** is 15 min (Lambda hard cap). Failures land in the DLQ after one retry.
-- **fck-nat is a single instance.** If it goes down, Lambdas can't reach Discord. Auto-recovery is on; switch to a managed NAT Gateway (~$35/mo) if uptime > $32/mo of savings.
+- **fck-nat is a single instance.** Switch to a managed NAT Gateway if you need the extra availability — at the cost of a much higher fixed monthly bill.
 
 ## API Documentation
 
