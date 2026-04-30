@@ -4,6 +4,12 @@ variable "region" {
   default     = "eu-west-3"
 }
 
+variable "allowed_account_ids" {
+  description = "If non-empty, refuse to plan/apply unless the resolved AWS credentials belong to one of these account IDs. Strongly recommended on shared workstations."
+  type        = list(string)
+  default     = []
+}
+
 variable "environment" {
   description = "Environment name (used for tagging and resource naming)"
   type        = string

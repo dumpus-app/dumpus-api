@@ -3,6 +3,11 @@
 region      = "eu-west-3"
 environment = "prod"
 
+# Strongly recommended: pin the account ID so a stray AWS_PROFILE pointing
+# at the wrong account fails the plan instead of touching it. Get yours with
+# `aws sts get-caller-identity --query Account --output text`.
+# allowed_account_ids = ["123456789012"]
+
 # Must already exist as a Route53 hosted zone in this account.
 domain_name   = "dumpus.app"
 api_subdomain = "api"
