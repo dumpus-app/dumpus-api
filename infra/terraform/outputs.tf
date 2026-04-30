@@ -3,6 +3,11 @@ output "api_url" {
   value       = "https://${local.api_fqdn}"
 }
 
+output "region" {
+  description = "AWS region this stack is deployed in"
+  value       = var.region
+}
+
 output "ecr_repository_url" {
   description = "Push the Lambda container image here"
   value       = aws_ecr_repository.lambda.repository_url
