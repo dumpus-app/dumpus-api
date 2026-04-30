@@ -62,9 +62,20 @@ data "aws_ami" "fck_nat" {
   most_recent = true
   owners      = ["568608671756"] # fck-nat publisher
 
+  # AWS provider v6 hard-fails most_recent lookups unless an owner is pinned
+  # via owner-id or image-id. owners=[] satisfies that, but the explicit
+  # filter is cheap belt-and-suspenders and keeps things working if a future
+  # version tightens the rule further.
   filter {
-    name   = "name"
-    values = ["fck-nat-amzn2-*-arm64-ebs"]
+    name   = "owner-id"
+    values = ["568608671756"]
+  }
+
+  filter {
+    name = "name"
+    # AL2023 builds. The "fck-nat-nat64-*" prefix is a different (NAT64)
+    # variant — the dash anchors keep us on the plain NAT image.
+    values = ["fck-nat-al2023-*-arm64-ebs"]
   }
 }
 

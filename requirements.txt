@@ -1,4 +1,4 @@
-apig-wsgi==2.18.0
+apig-wsgi==2.20.0
 async-timeout==4.0.2
 autopep8==2.0.2
 blinker==1.6.2
