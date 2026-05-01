@@ -10,6 +10,28 @@ resource "aws_s3_bucket" "package_data" {
   bucket = "${local.name}-package-data"
 }
 
+# Bucket policy: deny DeleteBucket from any principal. Removing the bucket
+# would orphan every encrypted blob (plus all the live presigned URLs the
+# clients are mid-download on). To drop the bucket on purpose, remove the
+# policy first, then delete.
+data "aws_iam_policy_document" "package_data_protect" {
+  statement {
+    sid       = "DenyBucketDeletion"
+    effect    = "Deny"
+    actions   = ["s3:DeleteBucket"]
+    resources = [aws_s3_bucket.package_data.arn]
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "package_data_protect" {
+  bucket = aws_s3_bucket.package_data.id
+  policy = data.aws_iam_policy_document.package_data_protect.json
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "package_data" {
   bucket = aws_s3_bucket.package_data.id
 
