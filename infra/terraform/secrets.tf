@@ -35,20 +35,6 @@ resource "aws_secretsmanager_secret_version" "postgres_url" {
   )
 }
 
-resource "aws_secretsmanager_secret" "discord_secret" {
-  name                    = "${local.name}/app/discord-secret"
-  recovery_window_in_days = 7
-}
-
-resource "aws_secretsmanager_secret_version" "discord_secret" {
-  secret_id     = aws_secretsmanager_secret.discord_secret.id
-  secret_string = var.discord_secret
-
-  lifecycle {
-    ignore_changes = [secret_string]
-  }
-}
-
 resource "aws_secretsmanager_secret" "diswho_jwt_secret" {
   name                    = "${local.name}/app/diswho-jwt-secret"
   recovery_window_in_days = 7

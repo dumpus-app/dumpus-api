@@ -1,6 +1,6 @@
 # Non-sensitive tfvars committed to the repo, used by the infra GitHub Actions
-# workflow. Sensitive values (discord_secret, diswho_jwt_secret) come in via
-# TF_VAR_* env from GitHub secrets — never commit those here.
+# workflow. Sensitive values (diswho_jwt_secret, wh_url) come in via TF_VAR_*
+# env from GitHub secrets — never commit those here.
 
 region      = "eu-west-3"
 environment = "prod"

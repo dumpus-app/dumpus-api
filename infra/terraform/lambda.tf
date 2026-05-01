@@ -12,7 +12,6 @@ locals {
     # them from Secrets Manager at startup using the ARNs below.
     SECRETS_ARN_MAP = jsonencode({
       POSTGRES_URL      = aws_secretsmanager_secret.postgres_url.arn
-      DISCORD_SECRET    = aws_secretsmanager_secret.discord_secret.arn
       DISWHO_JWT_SECRET = aws_secretsmanager_secret.diswho_jwt_secret.arn
       WH_URL            = aws_secretsmanager_secret.wh_url.arn
     })

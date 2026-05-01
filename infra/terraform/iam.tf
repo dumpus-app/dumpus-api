@@ -37,7 +37,6 @@ data "aws_iam_policy_document" "api" {
     actions = ["secretsmanager:GetSecretValue"]
     resources = [
       aws_secretsmanager_secret.postgres_url.arn,
-      aws_secretsmanager_secret.discord_secret.arn,
       aws_secretsmanager_secret.diswho_jwt_secret.arn,
       aws_secretsmanager_secret.wh_url.arn,
     ]
@@ -84,7 +83,6 @@ data "aws_iam_policy_document" "worker" {
     actions = ["secretsmanager:GetSecretValue"]
     resources = [
       aws_secretsmanager_secret.postgres_url.arn,
-      aws_secretsmanager_secret.discord_secret.arn,
       aws_secretsmanager_secret.diswho_jwt_secret.arn,
       aws_secretsmanager_secret.wh_url.arn,
     ]

@@ -12,9 +12,9 @@ environment = "prod"
 domain_name   = "dumpus.app"
 api_subdomain = "api"
 
-# Secrets — better passed as env: TF_VAR_discord_secret=... terraform apply
-discord_secret    = "REPLACE_ME"
+# Secrets — better passed as env: TF_VAR_diswho_jwt_secret=... tofu apply
 diswho_jwt_secret = ""
+wh_url            = ""
 diswho_base_url   = ""
 
 # Set to enable the GitHub Actions deploy role.
