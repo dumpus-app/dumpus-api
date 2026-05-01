@@ -1,6 +1,6 @@
 # Copy to terraform.tfvars and fill in. Do NOT commit terraform.tfvars.
 
-region      = "eu-west-3"
+region      = "eu-west-1"
 environment = "prod"
 
 # Strongly recommended: pin the account ID so a stray AWS_PROFILE pointing

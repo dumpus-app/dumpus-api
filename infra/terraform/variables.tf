@@ -1,7 +1,7 @@
 variable "region" {
   description = "AWS region"
   type        = string
-  default     = "eu-west-3"
+  default     = "eu-west-1"
 }
 
 variable "allowed_account_ids" {

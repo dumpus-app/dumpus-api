@@ -2,7 +2,7 @@
 # workflow. Sensitive values (diswho_jwt_secret, wh_url) come in via TF_VAR_*
 # env from GitHub secrets — never commit those here.
 
-region      = "eu-west-3"
+region      = "eu-west-1"
 environment = "prod"
 
 allowed_account_ids = ["436630934006"]

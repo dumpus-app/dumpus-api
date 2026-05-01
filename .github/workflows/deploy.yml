@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: eu-west-3
+  AWS_REGION: eu-west-1
   ECR_REPO: dumpus-prod-lambda
   API_FUNCTION: dumpus-prod-api
   WORKER_FUNCTION: dumpus-prod-worker
