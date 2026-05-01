@@ -14,5 +14,5 @@ github_repository = "dumpus-app/dumpus-api"
 
 image_tag = "bootstrap"
 
-diswho_base_url            = ""
+diswho_base_url            = "https://diswho.androz2091.fr"
 dl_zip_whitelisted_domains = ""
