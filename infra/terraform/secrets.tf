@@ -43,6 +43,10 @@ resource "aws_secretsmanager_secret" "discord_secret" {
 resource "aws_secretsmanager_secret_version" "discord_secret" {
   secret_id     = aws_secretsmanager_secret.discord_secret.id
   secret_string = var.discord_secret
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
 }
 
 resource "aws_secretsmanager_secret" "diswho_jwt_secret" {
@@ -53,4 +57,25 @@ resource "aws_secretsmanager_secret" "diswho_jwt_secret" {
 resource "aws_secretsmanager_secret_version" "diswho_jwt_secret" {
   secret_id     = aws_secretsmanager_secret.diswho_jwt_secret.id
   secret_string = var.diswho_jwt_secret
+
+  # TF seeds the value on first apply. After that, rotate via
+  # `aws secretsmanager put-secret-value`; this prevents tofu apply from
+  # reverting the rotation.
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+resource "aws_secretsmanager_secret" "wh_url" {
+  name                    = "${local.name}/app/wh-url"
+  recovery_window_in_days = 7
+}
+
+resource "aws_secretsmanager_secret_version" "wh_url" {
+  secret_id     = aws_secretsmanager_secret.wh_url.id
+  secret_string = var.wh_url
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
 }

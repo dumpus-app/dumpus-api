@@ -14,6 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import secrets_loader  # noqa: F401, E402 — runs at import to fetch SM secrets into os.environ
 from tasks import process_package  # noqa: E402
 
 

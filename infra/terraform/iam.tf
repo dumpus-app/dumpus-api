@@ -31,6 +31,17 @@ data "aws_iam_policy_document" "api" {
     actions   = ["sqs:SendMessage"]
     resources = [aws_sqs_queue.packages.arn]
   }
+
+  statement {
+    sid     = "ReadAppSecrets"
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = [
+      aws_secretsmanager_secret.postgres_url.arn,
+      aws_secretsmanager_secret.discord_secret.arn,
+      aws_secretsmanager_secret.diswho_jwt_secret.arn,
+      aws_secretsmanager_secret.wh_url.arn,
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "api" {
@@ -66,6 +77,17 @@ data "aws_iam_policy_document" "worker" {
       "sqs:ChangeMessageVisibility",
     ]
     resources = [aws_sqs_queue.packages.arn]
+  }
+
+  statement {
+    sid     = "ReadAppSecrets"
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = [
+      aws_secretsmanager_secret.postgres_url.arn,
+      aws_secretsmanager_secret.discord_secret.arn,
+      aws_secretsmanager_secret.diswho_jwt_secret.arn,
+      aws_secretsmanager_secret.wh_url.arn,
+    ]
   }
 }
 

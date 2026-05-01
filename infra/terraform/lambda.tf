@@ -7,9 +7,15 @@ locals {
     DISWHO_BASE_URL            = var.diswho_base_url
     QUEUE_BACKEND              = "sqs"
     SQS_QUEUE_URL              = aws_sqs_queue.packages.url
-    POSTGRES_URL               = aws_secretsmanager_secret_version.postgres_url.secret_string
-    DISCORD_SECRET             = var.discord_secret
-    DISWHO_JWT_SECRET          = var.diswho_jwt_secret
+
+    # Sensitive values are NOT in env. The Lambda's secrets_loader.py reads
+    # them from Secrets Manager at startup using the ARNs below.
+    SECRETS_ARN_MAP = jsonencode({
+      POSTGRES_URL      = aws_secretsmanager_secret.postgres_url.arn
+      DISCORD_SECRET    = aws_secretsmanager_secret.discord_secret.arn
+      DISWHO_JWT_SECRET = aws_secretsmanager_secret.diswho_jwt_secret.arn
+      WH_URL            = aws_secretsmanager_secret.wh_url.arn
+    })
   }
 }
 

@@ -6,6 +6,7 @@ from pathlib import Path
 # keep working when this module is loaded from `src/lambda_handlers/api.py`.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import secrets_loader  # noqa: F401, E402 — runs at import to fetch SM secrets into os.environ
 from apig_wsgi import make_lambda_handler  # noqa: E402
 from app import app  # noqa: E402
 
