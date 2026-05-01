@@ -41,7 +41,6 @@ jobs:
       - name: tofu plan
         if: inputs.action == 'plan'
         env:
-          TF_VAR_discord_secret: ${{ secrets.DISCORD_SECRET }}
           TF_VAR_diswho_jwt_secret: ${{ secrets.DISWHO_JWT_SECRET }}
           TF_VAR_wh_url: ${{ secrets.WH_URL }}
         run: tofu plan -var-file=terraform.ci.tfvars -no-color | tee /tmp/plan.txt
@@ -49,7 +48,6 @@ jobs:
       - name: tofu apply
         if: inputs.action == 'apply'
         env:
-          TF_VAR_discord_secret: ${{ secrets.DISCORD_SECRET }}
           TF_VAR_diswho_jwt_secret: ${{ secrets.DISWHO_JWT_SECRET }}
           TF_VAR_wh_url: ${{ secrets.WH_URL }}
         run: tofu apply -auto-approve -var-file=terraform.ci.tfvars
