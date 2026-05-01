@@ -132,6 +132,10 @@ resource "aws_instance" "fck_nat" {
   }
 
   tags = { Name = "${local.name}-fck-nat" }
+
+  # Ensure the EIP is attached to the ENI before the instance starts using it
+  # — otherwise EIP association races with the instance's ENI attachment.
+  depends_on = [aws_eip.fck_nat]
 }
 
 resource "aws_route_table" "private" {

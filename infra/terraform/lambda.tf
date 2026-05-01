@@ -77,7 +77,10 @@ resource "aws_lambda_function" "worker" {
     size = var.worker_ephemeral_storage_mb
   }
 
-  reserved_concurrent_executions = var.worker_reserved_concurrency
+  # null → use the account-level concurrency pool. New AWS accounts have a
+  # 10-execution ceiling and require ≥10 unreserved, so any reservation fails
+  # until you request a quota increase. Set the var > 0 once that's lifted.
+  reserved_concurrent_executions = var.worker_reserved_concurrency > 0 ? var.worker_reserved_concurrency : null
 
   vpc_config {
     subnet_ids         = aws_subnet.private[*].id

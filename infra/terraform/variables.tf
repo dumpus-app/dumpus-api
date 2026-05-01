@@ -132,9 +132,9 @@ variable "worker_ephemeral_storage_mb" {
 }
 
 variable "worker_reserved_concurrency" {
-  description = "Cap on concurrent worker Lambdas. Keep low to bound load on the DB and any third-party services the worker calls."
+  description = "Cap on concurrent worker Lambdas. 0 = no reservation (account-level pool). New AWS accounts have a 10-execution ceiling and reject any reservation until you request a Lambda concurrency quota increase. Set > 0 once that's lifted."
   type        = number
-  default     = 1
+  default     = 0
 }
 
 # ---- App secrets / config ----
